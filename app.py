@@ -1,9 +1,9 @@
 from flask import Flask, request, jsonify
-import joblib
+# import joblib
 import numpy as np
 from statistics import mode
 from flask_cors import CORS, cross_origin
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import requests
 import nltk
@@ -16,9 +16,9 @@ from dotenv import load_dotenv
 import os
 import google.generativeai as genai
 import random
-import shap
-from shap import Explainer, summary_plot
-import matplotlib.pyplot as plt
+# import shap
+# from shap import Explainer, summary_plot
+# import matplotlib.pyplot as plt
 
 nltk.download('popular')
 
