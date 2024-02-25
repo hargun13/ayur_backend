@@ -135,10 +135,10 @@ def process_data():
 
 
 ###################### MENTAL HEALTH CHATBOT ##############################
-intents = json.loads(open('./chatbot/intents.json').read())
-words = pickle.load(open('./chatbot/texts.pkl', 'rb'))
-classes = pickle.load(open('./chatbot/labels.pkl', 'rb'))
-model = load_model('./chatbot/model.h5')
+intents = json.loads(open('chatbot\\intents.json').read())
+words = pickle.load(open('chatbot\\texts.pkl', 'rb'))
+classes = pickle.load(open('chatbot\\labels.pkl', 'rb'))
+model = load_model('chatbot\\model.h5')
 lemmatizer = WordNetLemmatizer()
 
 def clean_up_sentence(sentence):
