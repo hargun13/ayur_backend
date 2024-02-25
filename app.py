@@ -6,11 +6,8 @@ from flask_cors import CORS, cross_origin
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import requests
-import nltk
-from nltk.stem import WordNetLemmatizer
 import pickle
 import numpy as np
-from keras.models import load_model
 import json
 from dotenv import load_dotenv
 import os
@@ -20,7 +17,7 @@ import random
 # from shap import Explainer, summary_plot
 # import matplotlib.pyplot as plt
 
-nltk.download('popular')
+# nltk.download('popular')
 
 load_dotenv()  # load all environment variables
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
@@ -133,64 +130,20 @@ def process_data():
 
 
 
-
-###################### MENTAL HEALTH CHATBOT ##############################
-intents = json.loads(open('./chatbot/intents.json').read())
-words = pickle.load(open('./chatbot/texts.pkl', 'rb'))
-classes = pickle.load(open('./chatbot/labels.pkl', 'rb'))
-model = load_model('./chatbot/model.h5')
-lemmatizer = WordNetLemmatizer()
-
-def clean_up_sentence(sentence):
-    sentence_words = nltk.word_tokenize(sentence)
-    sentence_words = [lemmatizer.lemmatize(word.lower()) for word in sentence_words]
-    return sentence_words
-
-def bow(sentence, words, show_details=True):
-    sentence_words = clean_up_sentence(sentence)
-    bag = [0] * len(words)
-    for s in sentence_words:
-        for i, w in enumerate(words):
-            if w == s:
-                bag[i] = 1
-                if show_details:
-                    print("found in bag: %s" % w)
-    return np.array(bag)
-
-def predict_class(sentence, model):
-    p = bow(sentence, words, show_details=False)
-    res = model.predict(np.array([p]))[0]
-    ERROR_THRESHOLD = 0.25
-    results = [[i, r] for i, r in enumerate(res) if r > ERROR_THRESHOLD]
-    results.sort(key=lambda x: x[1], reverse=True)
-    return_list = [{"intent": classes[r[0]], "probability": str(r[1])} for r in results]
-    return return_list
-
-def getResponse(ints, intents_json):
-    tag = ints[0]['intent']
-    list_of_intents = intents_json['intents']
-    for i in list_of_intents:
-        if i['tag'] == tag:
-            result = random.choice(i['responses'])
-            break
-    return result
-
-def chatbot_response(msg):
-    ints = predict_class(msg, model)
-    if ints:
-        res = getResponse(ints, intents)
-    else:
-        res = "Sorry, I cannot answer this question for you."
-    return res
-
 @app.route("/get", methods=["POST"])
-def get_bot_response():
-    user_text = request.get_json().get('msg')
-    print(user_text)
-    res = chatbot_response(user_text)
-    # print(res)
-    return jsonify({'response': res})
-###################### MENTAL HEALTH CHATBOT ##############################
+def medicinechatbot():
+    message = request.json['msg']
+    question = f"""
+    You are a mental health expert so please provide remedies and solution to get better in mental health:{message}
+    """
+    response = get_gemini_response(question)
+    exit_output={
+        "response":response,
+    }
+    return jsonify(exit_output)
+
+
+
 
 
 
